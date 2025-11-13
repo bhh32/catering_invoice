@@ -1,0 +1,52 @@
+app-id: com.bhh32.Invoicing
+runtime: org.freedesktop.Platform
+runtime-version: "24.08"
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: invoicing
+finish-args:
+  # Wayland support
+  - --socket=wayland
+  # X11 fallback support
+  - --socket=fallback-x11
+  # GPU acceleration for rendering
+  - --device=dri
+  # Home directory access for saving/loading invoices and PDFs
+  - --filesystem=home
+  # Access to XDG documents portal
+  - --filesystem=xdg-documents
+  # D-Bus session access for file dialogs
+  - --socket=session-bus
+  # File chooser portal for native dialogs
+  - --talk-name=org.freedesktop.portal.Desktop
+  - --talk-name=org.freedesktop.portal.FileChooser
+  # Share IPC namespace (required for X11)
+  - --share=ipc
+  # Network access for cargo to fetch dependencies
+  - --share=network
+
+build-options:
+  append-path: /usr/lib/sdk/rust-stable/bin
+  build-args:
+    - --share=network
+  env:
+    CARGO_HOME: /run/build/invoicing/cargo
+
+modules:
+  - name: invoicing
+    buildsystem: simple
+    build-commands:
+      - cargo build --release --verbose
+      # Install the binary
+      - install -Dm755 ./target/release/invoicing -t /app/bin/
+      # Install the desktop file
+      - install -Dm644 ./res/com.bhh32.Invoicing.desktop -t /app/share/applications/
+      # Install the icon
+      - install -Dm644 ./res/icons/hicolor/scalable/apps/com.bhh32.Invoicing.svg -t /app/share/icons/hicolor/scalable/apps/ || true
+      # Update the icon cache
+      - update-desktop-database -q /app/share/applications/ || true
+    sources:
+      - type: git
+        url: https://github.com/bhh32/invoicing.git
+        branch: main

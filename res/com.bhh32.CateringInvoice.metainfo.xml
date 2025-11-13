@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.bhh32.Invoicing</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0</project_license>
+    <name>Invoicing</name>
+    <summary>Generate professional invoices with line items</summary>
+    <description>
+        Invoicing is a powerful tool for generating professional looking invoices with line items.
+    </description>
+    <screenshots>
+        <screenshot type="default">
+            <image> </image>
+        </screenshot>
+    </screenshots>
+    <url type="homepage">https://github.com/bhh32/Invoicing</url>
+    <url type="bugtracker">https://github.com/bhh32/Invoicing/issues</url>
+    <provides>
+        <binary>com.bhh32.Invoicing</binary>
+    </provides>
+    <releases>
+        <release version="0.1.0" date="2025-10-25">
+            <description>Initial release</description>
+        </release>
+    </releases></component>
