@@ -1,13 +1,13 @@
 [Desktop Entry]
 Type=Application
-Name=Invoicing
-GenericName=Invoice Generator
+Name=Catering Invoice
+GenericName=Catering Invoice Generator
 Comment=Generate professional invoices by line item
-Exec=invoicing
-Icon=com.bhh32.Invoicing
+Exec=catering_invoice
+Icon=com.bhh32.CateringInvoice
 Terminal=false
 Categories=Office;Finance;
 Keywords=invoice;billing;accounting;hours;time;freelance;business;
 StartupNotify=true
-StartupWMClass=com.bhh32.Invoicing
+StartupWMClass=com.bhh32.CateringInvoice
 MimeType=application/json;
