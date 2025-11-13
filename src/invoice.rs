@@ -378,7 +378,8 @@ impl Application for App {
                 self.invoice.editing_item = None;
             }
             Message::CancelEdit => {
-                todo!()
+                self.invoice.desc.clear();
+                self.invoice.editing_item = None;
             }
             Message::UpdateLetterhead(val) => self.invoice.letterhead = val,
             Message::UpdateTitle(title) => self.invoice.invoice_title = title,
