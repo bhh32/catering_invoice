@@ -1,5 +1,0 @@
-[Runtime]
-name=com.bhh32.CateringInvoice.Debug
-
-[ExtensionOf]
-ref=app/com.bhh32.CateringInvoice/x86_64/master

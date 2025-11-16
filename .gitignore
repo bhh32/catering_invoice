@@ -1,4 +1,5 @@
 /target
 /repo
 /.flatpak-builder
+*.flatpak-builder/cache
 *.flatpak
