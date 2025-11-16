@@ -1,6 +1,8 @@
 pub mod display;
 pub mod invoice;
 pub mod menu_item;
+pub(crate) mod page;
+pub(crate) mod utilities;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let screen_size = display::get_primary_display_size()

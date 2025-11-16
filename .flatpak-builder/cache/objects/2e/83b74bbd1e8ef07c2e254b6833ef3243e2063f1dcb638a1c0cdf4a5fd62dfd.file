@@ -1,0 +1,23 @@
+[Application]
+name=com.bhh32.CateringInvoice
+runtime=org.freedesktop.Platform/x86_64/24.08
+sdk=org.freedesktop.Sdk/x86_64/24.08
+command=catering_invoice
+
+[Context]
+shared=network;ipc;
+sockets=x11;wayland;session-bus;fallback-x11;
+devices=dri;
+filesystems=home;xdg-documents;
+
+[Session Bus Policy]
+org.freedesktop.portal.FileChooser=talk
+org.freedesktop.portal.Desktop=talk
+
+[Extension com.bhh32.CateringInvoice.Debug]
+directory=lib/debug
+autodelete=true
+no-autodownload=true
+
+[Build]
+built-extensions=com.bhh32.CateringInvoice.Debug;

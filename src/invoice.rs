@@ -1,4 +1,4 @@
-use crate::menu_item::MenuItem;
+use crate::{menu_item::MenuItem, page::Page, utilities::word_wrap};
 use chrono::Local;
 use cosmic::{
     Action, Application, Core, Element, Task,
@@ -109,6 +109,8 @@ impl App {
             Local::now().format("%Y-%m-%d")
         ));
 
+        let page = Page::default();
+
         let mut ops = Vec::new();
         let mut y_pos = 270.0;
 
@@ -118,7 +120,7 @@ impl App {
         if !self.invoice.letterhead.is_empty() {
             ops.push(Op::StartTextSection);
             ops.push(Op::SetTextCursor {
-                pos: Point::new(Mm(20.0), Mm(y_pos)),
+                pos: Point::new(Mm(page.left_margin()), Mm(y_pos)),
             });
             ops.push(Op::SetFontSizeBuiltinFont {
                 size: Pt(24.0),
@@ -133,7 +135,7 @@ impl App {
 
             ops.push(Op::StartTextSection);
             ops.push(Op::SetTextCursor {
-                pos: Point::new(Mm(20.0), Mm(y_pos)),
+                pos: Point::new(Mm(page.left_margin()), Mm(y_pos)),
             });
             ops.push(Op::SetFontSizeBuiltinFont {
                 size: Pt(14.0),
@@ -151,7 +153,7 @@ impl App {
         if !self.invoice.event_date.is_empty() {
             ops.push(Op::StartTextSection);
             ops.push(Op::SetTextCursor {
-                pos: Point::new(Mm(20.0), Mm(y_pos)),
+                pos: Point::new(Mm(page.left_margin()), Mm(y_pos)),
             });
             ops.push(Op::SetFontSizeBuiltinFont {
                 size: Pt(12.0),
@@ -170,7 +172,7 @@ impl App {
             // Menu Items Header
             ops.push(Op::StartTextSection);
             ops.push(Op::SetTextCursor {
-                pos: Point::new(Mm(20.0), Mm(y_pos)),
+                pos: Point::new(Mm(page.left_margin()), Mm(y_pos)),
             });
             ops.push(Op::SetFontSizeBuiltinFont {
                 size: Pt(14.0),
@@ -184,22 +186,29 @@ impl App {
             y_pos -= 10.0;
 
             // Menu Items
+            let indent_mm = 5.0;
             for menu_item in &self.invoice.menu_items {
-                // Description
-                ops.push(Op::StartTextSection);
-                ops.push(Op::SetTextCursor {
-                    pos: Point::new(Mm(25.0), Mm(y_pos)),
-                });
-                ops.push(Op::SetFontSizeBuiltinFont {
-                    size: Pt(10.0),
-                    font: BuiltinFont::Helvetica,
-                });
-                ops.push(Op::WriteTextBuiltinFont {
-                    items: vec![TextItem::Text(menu_item.desc.clone())],
-                    font: BuiltinFont::Helvetica,
-                });
-                ops.push(Op::EndTextSection);
-                y_pos -= 6.0;
+                // Wrap the line description if it's longer than the right margin - 5
+                // based on font size (pt)
+                let wrap_border = page.compute_wrapping(10.0, indent_mm);
+                let wrapped_lines = word_wrap(&menu_item.desc, wrap_border);
+                for line in wrapped_lines {
+                    // Description
+                    ops.push(Op::StartTextSection);
+                    ops.push(Op::SetTextCursor {
+                        pos: Point::new(Mm(page.left_margin() + indent_mm), Mm(y_pos)),
+                    });
+                    ops.push(Op::SetFontSizeBuiltinFont {
+                        size: Pt(10.0),
+                        font: BuiltinFont::Helvetica,
+                    });
+                    ops.push(Op::WriteTextBuiltinFont {
+                        items: vec![TextItem::Text(line.clone())],
+                        font: BuiltinFont::Helvetica,
+                    });
+                    ops.push(Op::EndTextSection);
+                    y_pos -= 6.0;
+                }
             }
         }
 
@@ -208,7 +217,7 @@ impl App {
         // Pricing Breakdown
         ops.push(Op::StartTextSection);
         ops.push(Op::SetTextCursor {
-            pos: Point::new(Mm(20.0), Mm(y_pos)),
+            pos: Point::new(Mm(page.left_margin()), Mm(y_pos)),
         });
         ops.push(Op::SetFontSizeBuiltinFont {
             size: Pt(14.0),
@@ -223,7 +232,7 @@ impl App {
 
         ops.push(Op::StartTextSection);
         ops.push(Op::SetTextCursor {
-            pos: Point::new(Mm(25.0), Mm(y_pos)),
+            pos: Point::new(Mm(page.left_margin() + 5.0), Mm(y_pos)),
         });
         ops.push(Op::SetFontSizeBuiltinFont {
             size: Pt(10.0),
@@ -243,7 +252,7 @@ impl App {
 
         ops.push(Op::StartTextSection);
         ops.push(Op::SetTextCursor {
-            pos: Point::new(Mm(25.0), Mm(y_pos)),
+            pos: Point::new(Mm(page.left_margin() + 5.0), Mm(y_pos)),
         });
         ops.push(Op::SetFontSizeBuiltinFont {
             size: Pt(10.0),
@@ -262,7 +271,7 @@ impl App {
 
         ops.push(Op::StartTextSection);
         ops.push(Op::SetTextCursor {
-            pos: Point::new(Mm(25.0), Mm(y_pos)),
+            pos: Point::new(Mm(page.left_margin() + 5.0), Mm(y_pos)),
         });
         ops.push(Op::SetFontSizeBuiltinFont {
             size: Pt(10.0),
@@ -281,7 +290,7 @@ impl App {
         ops.push(Op::RestoreGraphicsState);
 
         // Create page with operations
-        let page = PdfPage::new(Mm(210.0), Mm(297.0), ops);
+        let page = PdfPage::new(Mm(page.width()), Mm(page.height()), ops);
 
         // Save the PDF to the chosen location
         let bytes = doc
